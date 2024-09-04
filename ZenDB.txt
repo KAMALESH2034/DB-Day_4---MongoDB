@@ -1,0 +1,206 @@
+Design database for Zen class programme
+        -users
+        -codekata
+        -attendance
+        -topics
+        -tasks
+        -company_drives
+        -mentors
+
+1. Sample 'users'  collections:
+--------------------------------
+
+    {
+  "_id":  "60d72a4f1b2a4c3e8d7b4567",
+  "name": "Arav",
+  "email": "arav@gmail.com",
+  "codekata_problems_solved": 85,
+  "attendance": [
+    {
+      "date": { "$date": "2020-06-12T00:00:00Z" },
+      "status": "Present"
+    },
+    {
+       "date": { "$date": "2020-06-13T00:00:00Z" },
+      "status": "Present"
+    },
+    {
+       "date": { "$date": "2020-06-15T00:00:00Z" },
+      "status": "Absent"
+    },
+    {
+       "date": { "$date": "2020-06-17T00:00:00Z" },
+      "status": "Present"
+    }
+  ],
+  "tasks_submitted": [
+    {
+      "task_id": "60d72b3e1c2b4d3f8d9b4568",
+      "submission_date": "2020-06-13T00:00:00Z",
+      "status": "Submitted"
+    },
+    {
+      "task_id": "60d72b3e1c2b4d3f8d9b4569",
+      "submission_date": "2020-06-15T00:00:00Z",
+      "status": "Submitted"
+    },
+    {
+      "task_id":  "60d72b3e1c2b4d3f8d9b4570",
+      "submission_date":"2020-06-16T00:00:00Z" ,
+      "status": "Not Submitted"
+    }
+  ],
+  "mentor_id": { "$oid": "60d72b3e1c2b4d3f8d9b4571" }
+}
+
+
+2. Sample 'codekata'  collections:
+----------------------------------
+    {
+        "_id":{
+            "$oid" : "60d72b3e1c2b4d3f8d9b487"
+        },
+        "title" : "Armstrong number",
+        "difficulty":"Easy"
+    }
+
+
+3. Sample 'attendance' collections:
+-----------------------------------
+
+    {
+        "_id":{
+            "$oid" : "60d72b3e1c2b4d3f8d9b875"
+        },
+        "user_id"{
+            "$oid":"60d72b3e1c2b4d3f8d9b867"
+        },
+        "date":{
+            "$date":"2020-06-17T00:00:00.000z"
+        },
+        "status": "Present"
+    }
+
+4. Sample 'topics' collections:
+--------------------------------
+
+    {
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4572"
+  },
+  "title": "Introduction to HTML",
+  "date": {
+    "$date": "2020-06-11T00:00:00.000Z"
+        }
+    }   
+
+5. Sample 'tasks' collections:
+------------------------------
+
+    {
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4574"
+  },
+  "title": "Basic Form Assignment",
+  "topic_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4572"
+  },
+  "due_date": {
+    "$date": "2020-06-12T00:00:00.000Z"
+  }
+}
+
+6. Sample 'company_drives' collections:
+---------------------------------------
+    {
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4576"
+  },
+  "company_name": "Accenture",
+  "date": {
+    "$date": "2020-07-04T00:00:00.000Z"
+  },
+  "students_appeared": [
+    {
+      "$oid": "60c72b2f4f1a4b3d8c8b4567"
+    },
+    {
+      "$oid": "60c72b2f4f1a4b3d8c8b4568"
+    }
+  ]
+}
+
+7. Sample 'mentors' collections:
+--------------------------------
+
+    {
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4578"
+  },
+  "name": "raj",
+  "mentees_count": 55
+    }
+
+
+
+
+    Queries:
+   ---------- 
+
+  1. Find all the topics and tasks which are thought in the month of October
+
+       db.topics.find({
+        "date": {
+            "$gte": ISODate("2020-10-01T00:00:00Z"),
+            "$lt": ISODate("2020-11-01T00:00:00Z")
+            }
+        });
+
+        db.tasks.find({
+        "due_date": {
+            "$gte": ISODate("2020-10-01T00:00:00Z"),
+            "$lt": ISODate("2020-11-01T00:00:00Z")
+            }
+        });
+
+
+  2. Find all the company drives which appeared between 15 oct-2020 and 31-oct-2020
+
+        db.company_drives.find({
+        "date": {
+            "$gte": ISODate("2020-10-15T00:00:00Z"),
+            "$lt": ISODate("2020-11-01T00:00:00Z")
+    }
+    });
+
+
+
+  3. Find all the company drives and students who are appeared for the placement.
+
+        db.company_drives.find({},
+         { "company_name": 1,
+          "students_appeared": 1 
+        });
+
+
+  4. Find the number of problems solved by the user in codekata
+
+        db.users.find({
+             "name": 1,
+             "codekata_problems_solved": 1, "_id": 0 }
+        );
+
+
+  5. Find all the mentors with who has the mentee's count more than 15
+
+        db.mentors.find({ "mentees_count": { $gt: 15 } });
+
+
+  6. Find the number of users who are absent and task is not submitted  between 15 oct-2020 and 31-oct-2020
+
+        db.users.find({
+            "attendance.date": { $gte: ISODate("2020-10-15"), $lt: ISODate("2020-11-01") },
+            "attendance.status": "Absent",
+            "tasks_submitted.date": { $gte: ISODate("2020-10-15"), $lt: ISODate("2020-11-01") },
+            "tasks_submitted.status": "Not Submitted"
+});
